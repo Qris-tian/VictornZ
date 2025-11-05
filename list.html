@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Halaman Baru</title>
+  <link rel="stylesheet" href="list.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="menu-btn" id="menuBtn">☰</div>
+  <h2>Halaman Baru</h2>
+</div>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <!-- Header Sidebar -->
+  <div class="sidebar-header">
+    <img src="logo.png" alt="Logo Victornz" class="sidebar-logo">
+    <h2>Victornz</h2>
+  </div>
+
+  <!-- Garis pemisah -->
+  <hr class="sidebar-divider">
+
+  <!-- Menu Navigasi -->
+  <nav class="sidebar-menu">
+    <a href="beranda.html">
+      <img src="house.png" alt="Home Icon" class="icon">
+      <span>Beranda</span>
+    </a>
+
+    <a href="rules.html">
+      <img src="book-text.png" alt="Rules Icon" class="icon">
+      <span>Rules</span>
+    </a>
+
+    <a href="list.html" class="active">
+      <img src="clipboard-list.png" alt="List Icon" class="icon">
+      <span>List Member</span>
+    </a>
+    
+    <a href="fotbar.html">
+      <img src="camera.png" alt="Fotbar Icon" class="icon">
+      <span>Fotbar</span>
+    </a>
+    
+    <a href="build.html">
+      <img src="image.png" alt="Build Icon" class="icon">
+      <span>Hasil Build</span>
+    </a>
+    
+    <a href="skin.html">
+      <img src="shirt.png" alt="Skin Icon" class="icon">
+      <span>Pasang Skin</span>
+    </a>
+    
+    <a href="pesan.html">
+      <img src="message-square-more.png" alt="Pesan Icon" class="icon">
+      <span>Pesan</span>
+    </a>
+  </nav>
+
+  <!-- Footer Sidebar -->
+  <div class="sidebar-footer">
+    <p>© 2025 Victornz</p>
+  </div>
+</div>
+
+<!-- KONTEN POLLOSAN -->
+<div class="content">
+  <!-- Konten halaman baru bisa ditambahkan di sini -->
+  <h1>Cooming Soon</h1>
+</div>
+
+<script>
+const sidebar = document.getElementById('sidebar');
+const menuBtn = document.getElementById('menuBtn');
+
+// Klik tombol ☰ untuk buka/tutup
+menuBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  sidebar.classList.toggle('active');
+});
+
+// Klik di luar sidebar → tutup
+document.addEventListener('click', (e) => {
+  const isInsideSidebar = sidebar.contains(e.target);
+  const isMenuBtn = menuBtn.contains(e.target);
+  if (!isInsideSidebar && !isMenuBtn) {
+    sidebar.classList.remove('active');
+  }
+});
+
+// Klik link dalam sidebar → tutup juga
+document.querySelectorAll('.sidebar a').forEach(link => {
+  link.addEventListener('click', () => {
+    sidebar.classList.remove('active');
+  });
+});
+</script>
+
+</body>
+</html>
