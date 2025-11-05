@@ -399,7 +399,7 @@ strong {
   margin: 4px 0;
 }
 .player {
-  margin-bottom: -24px;
+  margin-bottom: -16px;
 }
 .player-section .player:first-child {
   margin-top: 10px; /* 🔹 jarak antara judul dan tombol pertama */
