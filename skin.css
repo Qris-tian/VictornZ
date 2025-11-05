@@ -268,7 +268,7 @@ select {
   color: #fff;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(90deg, #4F46E5, #6366F1);
+  background: linear-gradient(270deg, #4169E1, #6BA8FF);
   box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
   transition: 0.3s ease;
   appearance: none;
@@ -277,7 +277,7 @@ select {
 }
 
 select:hover {
-  background: linear-gradient(90deg, #4338CA, #6366F1);
+  background: linear-gradient(270deg, #3C63D3, #78B0FF);
   box-shadow: 0 6px 14px rgba(99, 102, 241, 0.3);
 }
 
@@ -306,8 +306,7 @@ input[type="file"] {
 }
 
 input[type="file"]:hover {
-  background: #FFF2CC;
-  border-color: #FFC107;
+  background: (Mati)linear-gradient(90deg, #F5C72E, #EAB625);
 }
 
 /* ========================= */
@@ -335,7 +334,7 @@ input[type="file"]:hover {
 
 #downloadBtn {
   width: 100%;
-  background: #444;
+  background: linear-gradient(90deg, #34D399, #10B981);
   color: white;
   border-radius: 12px;
   padding: 12px 16px;
