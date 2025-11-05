@@ -71,9 +71,79 @@
 
 <!-- KONTEN POLLOSAN -->
 <div class="content">
-  <!-- Konten halaman baru bisa ditambahkan di sini -->
-  <h1>Cooming Soon</h1>
+  <div class="rules-container">
+    <h1>Rules</h1>
+
+    <p class="rules-intro">
+      Harap baca dan pahami semua peraturan di bawah ini agar suasana komunitas tetap nyaman dan menyenangkan bagi semua anggota.
+    </p>
+
+    <div class="rules-list">
+
+      <div class="rule">
+        <h2>1. Aktif</h2>
+        <p>Ngobrol bareng di grup ikun nimbrung jangan diem aja</p>
+      </div>
+
+      <div class="rule">
+        <h2>2. Jangan Baperan</h2>
+        <p>Biar asik di ajak bercanda, tapi....</p>
+      </div>
+
+      <div class="rule">
+        <h2>3. Bercanda Jangan Berlebihan</h2>
+        <p>Jangan membuat orang lain tidak nyaman atau risih</p>
+      </div>
+
+      <div class="rule">
+        <h2>4. Jangan Spam</h2>
+        <p>Jangan spam di grup WhatsApp, karena bisa menggangu kenyamanan</p>
+      </div>
+      
+      <div class="rule">
+        <h2>5. Toxic Jangan berlebihan</h2>
+        <p>Jangan toxic Berlebihan di grup WhatsApp, karena bisa menggangu kenyamanan</p>
+      </div>
+
+      <div class="rule">
+        <h2>6. Ikuti Arahan Admin</h2>
+        <p>Admin berhak mengatur, memperingatkan, atau menindak anggota yang melanggar aturan demi menjaga kenyamanan bersama.</p>
+      </div>
+
+      <div class="rule">
+        <h2>7. Konsekuensi Pelanggaran</h2>
+        <p>Peringatan pertama akan diberikan secara pribadi. Pelanggaran berulang dapat berujung pada penghapusan keanggotaan.</p>
+      </div>
+      
+      <div class="rule">
+        <h2>8. Toleransi</h2>
+        <p>Jangan menghina atau merendahkan agama lain, sebaik nya tidak usah bahas agama</p>
+      </div>
+      
+      <div class="rule">
+        <h2>9. Jangan Bertengkar Antar Member</h2>
+        <p>Jika terjadi sesuai di harapkan biaa meminta maaf, entah salah atau tidak karena minta maaf yg utama(tapi tidak semua masalah bisa di selesaikan dengan meminta maaf saja)</p>
+      </div>
+      
+      <div class="rule">
+        <h2>10. Jangan Spam</h2>
+        <p>Jangan spam di grup WhatsApp, karena bisa menggangu kenyamanan</p>
+      </div>
+      
+      <div class="rule">
+        <h2>11. Patuhi Rules PN</h2>
+        <p>Jika melangar mungkin akan ada Konsekuensi nya tergantung junlah warn yg di dapat</p>
+      </div>
+
+    </div>
+
+    <p class="rules-footer">
+      Dengan tetap bergabung, kamu dianggap telah membaca dan menyetujui semua peraturan di atas.  
+      Mari kita jaga komunitas ini tetap positif, aktif, dan bersahabat!
+    </p>
+  </div>
 </div>
+
 
 <script>
 const sidebar = document.getElementById('sidebar');
@@ -98,6 +168,15 @@ document.addEventListener('click', (e) => {
 document.querySelectorAll('.sidebar a').forEach(link => {
   link.addEventListener('click', () => {
     sidebar.classList.remove('active');
+  });
+});
+document.querySelectorAll('.rule p').forEach(p => {
+  p.addEventListener('click', function() {
+    // Hapus status aktif dari semua p lain
+    document.querySelectorAll('.rule p').forEach(el => el.classList.remove('active'));
+    
+    // Tambahkan ke yang diklik
+    this.classList.add('active');
   });
 });
 </script>
