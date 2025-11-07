@@ -57,7 +57,7 @@ const players = {
     isSlim: true
   },
   player5: {
-    name: ""GyzzaFaril20",
+    name: "GyzzaFaril20",
     discord: "gyzzafaril",
     rank: "Mythic",
     timezone: "WIB",
