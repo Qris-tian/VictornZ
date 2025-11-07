@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>List Player</title>
+  <title>List Member</title>
   <link rel="stylesheet" href="list.css">
 </head>
 <body>
@@ -14,93 +14,125 @@
   <h2>List Member</h2>
 </div>
 
-<!-- Sidebar -->
+<!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
-  <!-- Header Sidebar -->
   <div class="sidebar-header">
     <img src="logo.png" alt="Logo Victornz" class="sidebar-logo">
     <h2>Victornz</h2>
   </div>
-
-  <!-- Garis pemisah -->
   <hr class="sidebar-divider">
-
-  <!-- Menu Navigasi -->
   <nav class="sidebar-menu">
-    <a href="beranda.html">
-      <img src="house.png" alt="Home Icon" class="icon">
-      <span>Beranda</span>
-    </a>
-
-    <a href="rules.html">
-      <img src="book-text.png" alt="Rules Icon" class="icon">
-      <span>Rules</span>
-    </a>
-
-    <a href="list.html" class="active">
-      <img src="clipboard-list.png" alt="List Icon" class="icon">
-      <span>List Member</span>
-    </a>
-    
-    <a href="fotbar.html">
-      <img src="camera.png" alt="Fotbar Icon" class="icon">
-      <span>Fotbar</span>
-    </a>
-    
-    <a href="build.html">
-      <img src="image.png" alt="Build Icon" class="icon">
-      <span>Hasil Build</span>
-    </a>
-    
-    <a href="skin.html">
-      <img src="shirt.png" alt="Skin Icon" class="icon">
-      <span>Pasang Skin</span>
-    </a>
-    
-    <a href="pesan.html">
-      <img src="message-square-more.png" alt="Pesan Icon" class="icon">
-      <span>Pesan</span>
-    </a>
+    <a href="beranda.html"><img src="house.png" class="icon"><span>Beranda</span></a>
+    <a href="rules.html"><img src="book-text.png" class="icon"><span>Rules</span></a>
+    <a href="list.html" class="active"><img src="clipboard-list.png" class="icon"><span>List Member</span></a>
+    <a href="fotbar.html"><img src="camera.png" class="icon"><span>Fotbar</span></a>
+    <a href="build.html"><img src="image.png" class="icon"><span>Hasil Build</span></a>
+    <a href="skin.html"><img src="shirt.png" class="icon"><span>Pasang Skin</span></a>
+    <a href="pesan.html"><img src="message-square-more.png" class="icon"><span>Pesan</span></a>
   </nav>
-
-  <!-- Footer Sidebar -->
   <div class="sidebar-footer">
     <p>© 2025 Victornz</p>
   </div>
 </div>
 
-<!-- KONTEN POLLOSAN -->
+<!-- KONTEN -->
 <div class="content">
-  <!-- Konten halaman baru bisa ditambahkan di sini -->
-  <h1>Cooming Soon</h1>
+  <h1>List Member VictornZ</h1>
+    <div class="player-controls">
+      <input type="text" id="searchInput" placeholder="🔍  Search Player">
+      <select id="sortSelect">
+        <option value="default">Default (Waktu)</option>
+        <option value="az">A-Z</option>
+        <optgroup label="Rank:">
+          <option value="Mythic">Mythic</option>
+          <option value="Legend">Legend</option>
+          <option value="Elite">Elite</option>
+          <option value="Master">Master</option>
+          <option value="Rakyat">Rakyat</option>
+        </optgroup>
+        <optgroup label="Role:">
+          <option value="Builder">Builder</option>
+          <option value="Grinder">Grinder</option>
+        </optgroup>
+      </select>
+  </div>
+  
+  <div class="player-list">
+    <div class="player-item" onclick="showOverlay('player1')">
+      <canvas id="head1" width="64" height="64"></canvas>
+      <span>Christian252010</span>
+    </div>
+    <div class="player-item" onclick="showOverlay('player2')">
+      <canvas id="head2" width="64" height="64"></canvas>
+      <span>Elrumi19</span>
+    </div>
+    <div class="player-item" onclick="showOverlay('player3')">
+      <canvas id="head3" width="64" height="64"></canvas>
+      <span>frexymax</span>
+    </div>
+    <div class="player-item" onclick="showOverlay('player4')">
+      <canvas id="head4" width="64" height="64"></canvas>
+      <span>AsaaNiBozz</span>
+    </div>
+  </div>
 </div>
 
-<script>
-const sidebar = document.getElementById('sidebar');
-const menuBtn = document.getElementById('menuBtn');
+<!-- OVERLAY PLAYER INFO -->
+<div id="playerOverlay" class="overlay hidden">
+  <div class="overlay-content">
+    <button class="close-overlay" onclick="closeOverlay()">✕</button>
+    <h2 id="ov-name" class="player-name"></h2>
 
-// Klik tombol ☰ untuk buka/tutup
-menuBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  sidebar.classList.toggle('active');
-});
+    <div class="player-info-section">
+      <!-- Canvas untuk skin overlay -->
+      <canvas class="gambar-skin" id="ov-skin" width="32" height="64"></canvas>
 
-// Klik di luar sidebar → tutup
-document.addEventListener('click', (e) => {
-  const isInsideSidebar = sidebar.contains(e.target);
-  const isMenuBtn = menuBtn.contains(e.target);
-  if (!isInsideSidebar && !isMenuBtn) {
-    sidebar.classList.remove('active');
-  }
-});
+      <div class="player-details">
+        <div class="info-row">
+          <b class="info-label">Discord</b>
+          <span class="colon">:</span>
+          <span id="ov-discord"></span>
+        </div>
+        <div class="info-row">
+          <b class="info-label">Rank</b>
+          <span class="colon">:</span>
+          <span id="ov-rank"></span>
+        </div>
+        <div class="info-row">
+          <b class="info-label">Role</b>
+          <span class="colon">:</span>
+          <span id="ov-role"></span>
+        </div>
+        <div class="info-row">
+          <b class="info-label">Waktu</b>
+          <span class="colon">:</span>
+          <span id="ov-timezone"></span>
+        </div>
+        <div class="info-row">
+          <b class="info-label">Luang</b>
+          <span class="colon">:</span>
+          <span id="ov-free"></span>
+        </div>
+        <div class="info-row">
+          <b class="info-label">Hobi</b>
+          <span class="colon">:</span>
+          <span id="ov-hobby"></span>
+        </div>
+        <div class="info-row">
+          <b class="info-label">Cita-Cita</b>
+          <span class="colon">:</span>
+          <span id="ov-cita"></span>
+        </div>
+      </div>
 
-// Klik link dalam sidebar → tutup juga
-document.querySelectorAll('.sidebar a').forEach(link => {
-  link.addEventListener('click', () => {
-    sidebar.classList.remove('active');
-  });
-});
-</script>
+      <div class="player-desc">
+        <div class="info-row"><span class="info-label"><b>Moto :</b></span><br><span id="ov-moto"></span></div>
+        <div class="info-row"><span class="info-label"><b>Tentang :</b></span><br><span id="ov-about"></span></div>
+      </div>
+    </div>
+  </div>
+</div>
 
+<script src="listplayer.js"></script>
 </body>
 </html>
