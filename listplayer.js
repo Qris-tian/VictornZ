@@ -160,3 +160,44 @@ document.addEventListener('click', (e) => {
 document.querySelectorAll('.sidebar a').forEach(link => {
   link.addEventListener('click', () => sidebar.classList.remove('active'));
 });
+// === SEARCH & SORT FUNCTION ===
+const searchInput = document.getElementById("searchInput");
+const sortSelect = document.getElementById("sortSelect");
+const playerList = document.querySelector(".player-list");
+const playerItems = Array.from(document.querySelectorAll(".player-item"));
+
+// Simpan urutan default
+const defaultOrder = [...playerItems];
+
+// 🔍 Fitur Search
+searchInput.addEventListener("input", () => {
+  const searchTerm = searchInput.value.toLowerCase();
+  playerItems.forEach(item => {
+    const name = item.querySelector("span").textContent.toLowerCase();
+    item.style.display = name.includes(searchTerm) ? "flex" : "none";
+  });
+});
+
+// 🟨 Fitur Sort
+sortSelect.addEventListener("change", () => {
+  const value = sortSelect.value;
+  let sortedItems = [];
+
+  if (value === "default") {
+    sortedItems = defaultOrder;
+  } else if (value === "az") {
+    sortedItems = [...playerItems].sort((a, b) => {
+      return a.querySelector("span").textContent.localeCompare(b.querySelector("span").textContent);
+    });
+  } else {
+    // Sort berdasarkan rank atau role
+    sortedItems = playerItems.filter(item => {
+      const name = item.querySelector("span").textContent;
+      const data = players[`player${defaultOrder.indexOf(item) + 1}`];
+      return data.rank === value || data.role === value;
+    });
+  }
+
+  playerList.innerHTML = "";
+  sortedItems.forEach(item => playerList.appendChild(item));
+});
