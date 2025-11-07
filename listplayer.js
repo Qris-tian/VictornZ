@@ -58,16 +58,16 @@ const players = {
   },
   player5: {
     name: "GyzzaFaril20",
+    skin: "skin/a.png",
     discord: "gyzzafaril",
     rank: "Mythic",
     role: "Grinder",
     timezone: "WIB",
     free: "Weekend-Malam",
-    moto: "It's the one and only G Y double Z",
-    about: "Teknisi Redstone yang berorientasi pada efisiensi dengan keahlian ganda dalam optimalisasi ekonomi Villager. Berpengalaman dalam merancang dan mengeksekusi sistem otomatisasi skala besar yang resource-friendly dan server-friendly (minim lag). Memiliki pemahaman mendalam tentang mekanika inti permainan (game mechanics) untuk menemukan solusi inovatif. Spesialis dalam mengubah sirkuit yang rumit menjadi desain yang ringkas dan andal. Terbukti berhasil membangun infrastruktur trading hall yang mampu mengamankan penawaran dagang (trade) paling berharga dengan diskon maksimum. Terampil dalam troubleshooting sirkuit yang ada dan siap menerapkan otomatisasi penuh untuk mencapai kemandirian sumber daya.",
     hobby: "Catur",
     cita: " Desain grafis",
-    skin: "skin/a.png",
+    moto: "It's the one and only G Y double Z",
+    about: "Teknisi Redstone yang berorientasi pada efisiensi dengan keahlian ganda dalam optimalisasi ekonomi Villager. Berpengalaman dalam merancang dan mengeksekusi sistem otomatisasi skala besar yang resource-friendly dan server-friendly (minim lag). Memiliki pemahaman mendalam tentang mekanika inti permainan (game mechanics) untuk menemukan solusi inovatif. Spesialis dalam mengubah sirkuit yang rumit menjadi desain yang ringkas dan andal. Terbukti berhasil membangun infrastruktur trading hall yang mampu mengamankan penawaran dagang (trade) paling berharga dengan diskon maksimum. Terampil dalam troubleshooting sirkuit yang ada dan siap menerapkan otomatisasi penuh untuk mencapai kemandirian sumber daya.",
     isSlim: false
   }
 };
