@@ -363,7 +363,7 @@ strong {
 }
 
 .player-desc {
-  margin-top: -5px;
+  margin: 0;
   padding-top: 15px;
   color: darkgray;
   text-align: center;
@@ -371,8 +371,9 @@ strong {
   font-size: 16px;
 }
 .player-desc .info-row {
-  margin-bottom: 20px;
-  display: inline-block;
+  margin: 0 auto;
+  width: 336px;
+  display: block;
 }
 /* ========================= */
 /* RAPIKAN LABEL DAN COLON ‼️ */
