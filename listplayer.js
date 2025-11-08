@@ -58,7 +58,7 @@ const players = {
   },
   player5: {
     name: "GyzzaFaril20",
-    skin: "skin/a.png",
+    skin: "skin/aril.png",
     discord: "gyzzafaril",
     rank: "Mythic",
     role: "Grinder",
@@ -72,7 +72,7 @@ const players = {
   },
   player6: {
     name: "setya_315104",
-    skin: "skin/a.png",
+    skin: "skin/setya.png",
     discord: "setya031",
     rank: "Legend",
     role: "Grinder",
@@ -86,6 +86,7 @@ const players = {
   },
   player7: {
     name: "Ponkzz_x_C",
+    skin: "skin/ponk.png"
     discord: "ponkkzzz",
     rank: "Rakyat",
     timezone: "WIB",
@@ -100,6 +101,7 @@ const players = {
   },
   player8: {
     name: "ReinyArthana ",
+    skin: "skin/rein.png"
     discord: "reiny27 ",
     rank: "Legend",
     timezone: "WIB",
