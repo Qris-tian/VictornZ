@@ -86,7 +86,7 @@ const players = {
   },
   player7: {
     name: "Ponkzz_x_C",
-    skin: "skin/ponk.png"
+    skin: "skin/ponk.png",
     discord: "ponkkzzz",
     rank: "Rakyat",
     timezone: "WIB",
@@ -101,7 +101,7 @@ const players = {
   },
   player8: {
     name: "ReinyArthana ",
-    skin: "skin/rein.png"
+    skin: "skin/rein.png",
     discord: "reiny27 ",
     rank: "Legend",
     timezone: "WIB",
