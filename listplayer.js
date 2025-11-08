@@ -83,6 +83,34 @@ const players = {
     moto: "Stay true to yourself",
     about: "I am a mighty person",
     isSlim: false
+  },
+  player7: {
+    name: "Ponkzz_x_C",
+    discord: "ponkkzzz",
+    rank: "Rakyat",
+    timezone: "WIB",
+    free: "MALAM",
+    role: "Grinder",
+    moto: "GTW",
+    about: "aku manusia, kalo kau apa, ga boleh sama",
+    hobby: "Basket😋",
+    cita: "ke jepang🙏",
+    skin: "skin/a.png",
+    isSlim: false
+  },
+  player8: {
+    name: "ReinyArthana ",
+    discord: "reiny27 ",
+    rank: "Legend",
+    timezone: "WIB",
+    free: "Malam",
+    role: "Grinder",
+    moto: "Pengen tinggi ",
+    about: "Suka makan ",
+    hobby: "Eksperimen makanan ",
+    cita: "Nikahin Arion ",
+    skin: "skin/a.png",
+    isSlim: false
   }
 };
 
