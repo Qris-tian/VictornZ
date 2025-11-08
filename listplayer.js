@@ -229,3 +229,27 @@ sortSelect.addEventListener("change", () => {
   playerList.innerHTML = "";
   sortedItems.forEach(item => playerList.appendChild(item));
 });
+// === FITUR SCROLL UNTUK OVERLAY ===
+document.addEventListener("DOMContentLoaded", () => {
+  const overlay = document.getElementById("playerOverlay");
+  const content = overlay.querySelector(".overlay-content");
+
+  // Pastikan overlay bisa di-scroll tanpa memengaruhi body
+  overlay.addEventListener("wheel", (e) => {
+    const canScroll =
+      content.scrollHeight > content.clientHeight &&
+      (
+        (e.deltaY < 0 && content.scrollTop > 0) ||
+        (e.deltaY > 0 && content.scrollTop + content.clientHeight < content.scrollHeight)
+      );
+
+    if (canScroll) {
+      e.stopPropagation(); // cegah scroll body
+    }
+  }, { passive: false });
+
+  // Tambahkan gaya scroll otomatis
+  content.style.maxHeight = "85vh";
+  content.style.overflowY = "auto";
+  content.style.overscrollBehavior = "contain";
+});
