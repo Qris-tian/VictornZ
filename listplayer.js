@@ -8,10 +8,10 @@ const players = {
     role: "Builder",
     timezone: "WIB",
     free: "Malam",
-    hobby: "Turu",
+    hobby: "Belajar hal baru",
     cita: "Orang Sukses",
     about: "Dingin Tetapi Tidak Kejam",
-    moto: "Menyerah Bukanlah Pilihan",
+    moto: "Learning from mistakes",
     isSlim: true
   },
   player2: {
