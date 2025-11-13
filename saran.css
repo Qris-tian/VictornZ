@@ -260,7 +260,7 @@ strong {
   padding-bottom: 8px;
   border-radius: 10px;         /* sudut membulat */
   box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* bayangan lembut */
-  width: fit-content;          /* ukuran menyesuaikan isi */
+  width: 320px;          /* ukuran menyesuaikan isi */
   max-width: 400px;            /* batas lebar */
   border: 1px solid #ddd;
   display: block;
@@ -282,12 +282,6 @@ strong {
   border-bottom: 2px solid #ddd;
   margin-bottom: 0px;
 }
-.tangap {
-  font-size: 12px;
-  color: green;
-  font-weight: bold;
-  opacity: 60%;
-}
 .form {
   border: none;
   display: block;
@@ -302,4 +296,22 @@ strong {
   margin: 0 auto;
   margin-bottom: 14px;
   margin-top: -18px;
+}
+.terima {
+  font-size: 12px;
+  color: green;
+  font-weight: bold;
+  opacity: 70%;
+}
+.mungkin {
+  font-size: 12px;
+  color: orange;
+  font-weight: bold;
+  opacity: 70%;
+}
+.tidak {
+  font-size: 12px;
+  color: crimson;
+  font-weight: bold;
+  opacity: 70%;
 }
