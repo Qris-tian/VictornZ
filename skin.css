@@ -1,3 +1,9 @@
+@font-face {
+  font-family: 'minecraft'; /* Nama bebas */
+  src: url('minercraftory.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
 body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
@@ -214,10 +220,10 @@ body {
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 h1 {
-  font-family: Nunito;
+  font-family: minecraft;
   color: #fffbea;
   text-align: center;
-  font-size: 2em;
+  font-size: 1.8em;
   margin-bottom: 30px;
   margin-top: 0px;
   border-radius: 8px;
