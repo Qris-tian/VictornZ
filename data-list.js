@@ -15,6 +15,7 @@ Object.keys(players).forEach((key, index) => {
     ctx.drawImage(img, 40, 8, 8, 8, 0, 0, 64, 64); // overlay top layer
   };
 });
+
 const players = {
   player1: {
     name: "Christian252010",
