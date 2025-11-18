@@ -1,54 +1,163 @@
-// === DATA PLAYER ===
+// ===========================
+// AUTO GENERATE SKIN NAME (5 huruf awal)
+// ===========================
+function autoSkinFromName(name) {
+  const cleaned = name.replace(/[^A-Za-z0-9]/g, "").toLowerCase();
+  const prefix = cleaned.substring(0, 5);
+  return `skin/${prefix}.png`;
+}
 
-// === HEAD CROP DI LIST MEMBER ===
+// ===========================
+// LOAD IMAGE DENGAN FALLBACK
+// ===========================
+function loadImageWithFallback(src, fallback) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => {
+      const fallbackImg = new Image();
+      fallbackImg.onload = () => resolve(fallbackImg);
+      fallbackImg.src = fallback;
+    };
+    img.src = src;
+  });
+}
 
-// === OVERLAY PLAYER ===
+// ===========================
+// LOAD DATA GOOGLE SHEET
+// ===========================
+async function loadPlayersFromSheet() {
+  const url =
+    "https://docs.google.com/spreadsheets/d/1JytAOIy_fz_Ip41UMyNwssyIL0Nnxq7Xsu7aGQGIa_I/gviz/tq?gid=941265557&tqx=out:json";
+
+  const res = await fetch(url);
+  const text = await res.text();
+  const json = JSON.parse(
+    text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1)
+  );
+  const rows = json.table.rows;
+
+  let obj = {};
+  let index = 1;
+
+  for (let i = 0; i < rows.length; i++) {
+    const cell = rows[i].c[14];
+    if (!cell || !cell.v) continue;
+
+    const d = cell.v.split("$");
+    const name = (d[0] || "").trim();
+    if (!name) continue;
+
+    obj[`player${index}`] = {
+      name: name,
+      skin: autoSkinFromName(name),
+      discord: d[1] || "",
+      rank: d[2] || "",
+      timezone: d[3] || "",
+      free: d[4] || "",
+      role: d[5] || "",
+      moto: d[6] || "",
+      about: d[7] || "",
+      hobby: d[8] || "",
+      cita: d[9] || "",
+      isSlim: (d[11] || "").toLowerCase() === "slim",
+    };
+
+    index++;
+  }
+
+  window.players = obj;
+  window.originalOrder = Object.keys(obj); // simpan urutan asli
+  renderPlayerList();
+}
+
+// ===========================
+// RENDER HANYA HEAD UNTUK LIST
+// ===========================
+function renderHead(canvas, skinPath) {
+  const ctx = canvas.getContext("2d");
+  ctx.imageSmoothingEnabled = false;
+
+  loadImageWithFallback(skinPath, "skin/steve.png").then((img) => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 8, 8, 8, 8, 0, 0, 64, 64);
+    ctx.drawImage(img, 40, 8, 8, 8, 0, 0, 64, 64);
+  });
+}
+
+// ===========================
+// RENDER FULL BODY UNTUK OVERLAY
+// ===========================
+function renderFullBody(canvas, skinPath, isSlim) {
+  const ctx = canvas.getContext("2d");
+  ctx.imageSmoothingEnabled = false;
+
+  loadImageWithFallback(skinPath, "skin/steve.png").then((img) => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const scale = 2;
+    const armWidth = isSlim ? 3 : 4;
+
+    // Kepala
+    ctx.drawImage(img, 8, 8, 8, 8, 8, 0, 8 * scale, 8 * scale);
+    ctx.drawImage(img, 40, 8, 8, 8, 8, 0, 8 * scale, 8 * scale);
+
+    // Badan
+    ctx.drawImage(img, 20, 20, 8, 12, 8, 16, 8 * scale, 12 * scale);
+    ctx.drawImage(img, 20, 36, 8, 12, 8, 16, 8 * scale, 12 * scale);
+
+    // Lengan kiri (geser 3px ke kiri jika wide)
+    const leftArmX = isSlim ? 2 : 0;
+    ctx.drawImage(img, 44, 20, armWidth, 12, leftArmX, 16, armWidth * scale, 12 * scale);
+
+    // Lengan kanan
+    ctx.drawImage(img, 36, 52, armWidth, 12, 24, 16, armWidth * scale, 12 * scale);
+
+    // Kaki kiri
+    ctx.drawImage(img, 4, 20, 4, 12, 8, 40, 4 * scale, 12 * scale);
+
+    // Kaki kanan
+    ctx.drawImage(img, 20, 52, 4, 12, 16, 40, 4 * scale, 12 * scale);
+  });
+}
+
+// ===========================
+// RENDER PLAYER LIST
+// ===========================
+function renderPlayerList() {
+  const list = document.getElementById("playerList");
+  list.innerHTML = "";
+
+  let i = 1;
+  for (const key in players) {
+    const p = players[key];
+
+    const item = document.createElement("div");
+    item.className = "player-item";
+    item.dataset.key = key; // penting untuk sort
+    item.onclick = () => showOverlay(key);
+
+    item.innerHTML = `
+      <canvas id="head${i}" width="64" height="64"></canvas>
+      <span>${p.name}</span>
+    `;
+
+    list.appendChild(item);
+
+    const canvas = document.getElementById(`head${i}`);
+    renderHead(canvas, p.skin);
+
+    i++;
+  }
+}
+
+// ===========================
+// SHOW OVERLAY PLAYER
+// ===========================
 function showOverlay(id) {
   const p = players[id];
   if (!p) return;
 
   document.getElementById("ov-name").textContent = p.name;
-
-  const canvas = document.getElementById("ov-skin");
-  const ctx = canvas.getContext("2d");
-  ctx.imageSmoothingEnabled = false;
-
-  const img = new Image();
-  img.src = p.skin;
-  img.onload = () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const scale = 2;
-    const armWidth = p.isSlim ? 3 : 4;
-
-    // Offset posisi tangan kanan (agar seimbang dengan model slim & wide)
-    const rightArmX = p.isSlim ? 24 : 24;
-    const leftArmX = p.isSlim ? 2 : 0;
-
-    // === Kepala ===
-    ctx.drawImage(img, 8, 8, 8, 8, 8, 0, 8 * scale, 8 * scale);
-    ctx.drawImage(img, 40, 8, 8, 8, 8, 0, 8 * scale, 8 * scale);
-
-    // === Badan ===
-    ctx.drawImage(img, 20, 20, 8, 12, 8, 16, 8 * scale, 12 * scale);
-    ctx.drawImage(img, 20, 36, 8, 12, 8, 16, 8 * scale, 12 * scale);
-    // === Lengan kiri (base + overlay) ===
-    ctx.drawImage(img, 44, 20, armWidth, 12, leftArmX, 16, armWidth * scale, 12 * scale);
-    ctx.drawImage(img, 44, 36, armWidth, 12, leftArmX, 16, armWidth * scale, 12 * scale);
-
-    // === Lengan kanan (base + overlay) ===
-    ctx.drawImage(img, 36, 52, armWidth, 12, rightArmX, 16, armWidth * scale, 12 * scale);
-    ctx.drawImage(img, 52, 52, armWidth, 12, rightArmX, 16, armWidth * scale, 12 * scale);
-
-    // === Kaki kiri (base + overlay) ===
-    ctx.drawImage(img, 4, 20, 4, 12, 8, 40, 4 * scale, 12 * scale);
-    ctx.drawImage(img, 4, 36, 4, 12, 8, 40, 4 * scale, 12 * scale);
-
-    // === Kaki kanan (base + overlay) ===
-    ctx.drawImage(img, 20, 52, 4, 12, 16, 40, 4 * scale, 12 * scale);
-    ctx.drawImage(img, 4, 52, 4, 12, 16, 40, 4 * scale, 12 * scale);
-  };
-
-  // === Info player ===
   document.getElementById("ov-discord").textContent = p.discord;
   document.getElementById("ov-rank").textContent = p.rank;
   document.getElementById("ov-role").textContent = p.role;
@@ -59,94 +168,111 @@ function showOverlay(id) {
   document.getElementById("ov-about").textContent = p.about;
   document.getElementById("ov-moto").textContent = p.moto;
 
-  document.getElementById("playerOverlay").classList.remove("hidden");
+  const canvas = document.getElementById("ov-skin");
+  renderFullBody(canvas, p.skin, p.isSlim);
+
   const overlay = document.getElementById("playerOverlay");
-overlay.classList.add("show");
+  overlay.classList.remove("hidden");
+  overlay.classList.add("show");
 }
 
 function closeOverlay() {
-  document.getElementById("playerOverlay").classList.add("hidden");
   const overlay = document.getElementById("playerOverlay");
-overlay.classList.add("show");
+  overlay.classList.add("hidden");
 }
 
-// === SIDEBAR TOGGLE ===
-const sidebar = document.getElementById('sidebar');
-const menuBtn = document.getElementById('menuBtn');
-menuBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  sidebar.classList.toggle('active');
-});
-document.addEventListener('click', (e) => {
-  if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
-    sidebar.classList.remove('active');
-  }
-});
-document.querySelectorAll('.sidebar a').forEach(link => {
-  link.addEventListener('click', () => sidebar.classList.remove('active'));
-});
-// === SEARCH & SORT FUNCTION ===
+// ===========================
+// SEARCH
+// ===========================
 const searchInput = document.getElementById("searchInput");
-const sortSelect = document.getElementById("sortSelect");
-const playerList = document.querySelector(".player-list");
-const playerItems = Array.from(document.querySelectorAll(".player-item"));
 
-// Simpan urutan default
-const defaultOrder = [...playerItems];
-
-// 🔍 Fitur Search
 searchInput.addEventListener("input", () => {
-  const searchTerm = searchInput.value.toLowerCase();
-  playerItems.forEach(item => {
+  const term = searchInput.value.toLowerCase();
+  const items = document.querySelectorAll(".player-item");
+
+  items.forEach((item) => {
     const name = item.querySelector("span").textContent.toLowerCase();
-    item.style.display = name.includes(searchTerm) ? "flex" : "none";
+    item.style.display = name.includes(term) ? "flex" : "none";
   });
 });
 
-// 🟨 Fitur Sort
-sortSelect.addEventListener("change", () => {
-  const value = sortSelect.value;
-  let sortedItems = [];
+// ===========================
+// TOGGLE SORT A-Z / DEFAULT
+// ===========================
+let isSortedAZ = false; // status toggle
+const sortBtn = document.getElementById("sortBtn"); // tombol toggle sort
 
-  if (value === "default") {
-    sortedItems = defaultOrder;
-  } else if (value === "az") {
-    sortedItems = [...playerItems].sort((a, b) => {
-      return a.querySelector("span").textContent.localeCompare(b.querySelector("span").textContent);
-    });
+sortBtn.addEventListener("click", () => {
+  const list = document.getElementById("playerList");
+  const items = Array.from(document.querySelectorAll(".player-item"));
+
+  let sorted;
+
+  if (!isSortedAZ) {
+    // mode A-Z
+    sorted = [...items].sort((a, b) =>
+      a.querySelector("span").textContent.localeCompare(
+        b.querySelector("span").textContent
+      )
+    );
+    isSortedAZ = true;
   } else {
-    // Sort berdasarkan rank atau role
-    sortedItems = playerItems.filter(item => {
-      const name = item.querySelector("span").textContent;
-      const data = players[`player${defaultOrder.indexOf(item) + 1}`];
-      return data.rank === value || data.role === value;
-    });
+    // mode Default (urutan asli)
+    sorted = [...items].sort((a, b) =>
+      window.originalOrder.indexOf(a.dataset.key) -
+      window.originalOrder.indexOf(b.dataset.key)
+    );
+    isSortedAZ = false;
   }
 
-  playerList.innerHTML = "";
-  sortedItems.forEach(item => playerList.appendChild(item));
+  list.innerHTML = "";
+  sorted.forEach((item) => list.appendChild(item));
 });
-// === FITUR SCROLL UNTUK OVERLAY ===
+
+// ===========================
+// SIDEBAR TOGGLE
+// ===========================
+const sidebar = document.getElementById("sidebar");
+const menuBtn = document.getElementById("menuBtn");
+
+menuBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  sidebar.classList.toggle("active");
+});
+
+document.addEventListener("click", (e) => {
+  if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+    sidebar.classList.remove("active");
+  }
+});
+
+// ===========================
+// SCROLL FIX OVERLAY
+// ===========================
 document.addEventListener("DOMContentLoaded", () => {
   const overlay = document.getElementById("playerOverlay");
   const content = overlay.querySelector(".overlay-content");
 
-  // Pastikan overlay bisa di-scroll tanpa memengaruhi body
-  overlay.addEventListener("wheel", (e) => {
-    const canScroll =
-      content.scrollHeight > content.clientHeight &&
-      (
-        (e.deltaY < 0 && content.scrollTop > 0) ||
-        (e.deltaY > 0 && content.scrollTop + content.clientHeight < content.scrollHeight)
-      );
+  overlay.addEventListener(
+    "wheel",
+    (e) => {
+      const canScroll =
+        content.scrollHeight > content.clientHeight &&
+        ((e.deltaY < 0 && content.scrollTop > 0) ||
+          (e.deltaY > 0 &&
+            content.scrollTop + content.clientHeight < content.scrollHeight));
 
-    if (canScroll) {
-      e.stopPropagation(); // cegah scroll body
-    }
-  }, { passive: false });
+      if (canScroll) e.stopPropagation();
+    },
+    { passive: false }
+  );
 
-  // Tambahkan gaya scroll otomatis
   content.style.maxHeight = "85vh";
   content.style.overflowY = "auto";
   content.style.overscrollBehavior = "contain";
 });
+
+// ===========================
+// START
+// ===========================
+loadPlayersFromSheet();
