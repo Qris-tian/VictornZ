@@ -1,3 +1,20 @@
+Object.keys(players).forEach((key, index) => {
+  const headId = `head${index + 1}`;
+  const canvas = document.getElementById(headId);
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+
+  const img = new Image();
+  img.src = players[key].skin;
+  img.onload = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // crop kepala 8x8 px → scale 64x64
+    ctx.drawImage(img, 8, 8, 8, 8, 0, 0, 64, 64);
+    ctx.drawImage(img, 40, 8, 8, 8, 0, 0, 64, 64); // overlay top layer
+  };
+});
 const players = {
   player1: {
     name: "Christian252010",
