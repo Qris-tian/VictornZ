@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Donasi IRL</title>
+
+  <link rel="stylesheet" href="donasi.css">
+  <link rel="stylesheet" href="sidebar.css">
+</head>
+
+<body data-title="Donasi IRL" data-section="donasi">
+
+<!-- SIDEBAR (load otomatis) -->
+<div id="sidebar-container"></div>
+
+<nav class="toggle-don">
+  <a href="donasi.html">Duit Server</a>
+  <a href="donasi-irl.html" class="on">Duit Real</a>
+</nav>
+<!-- MAIN -->
+<div class="content-wrap">
+  <div class="main-area">
+    <div class="container page-header">
+      <h1>Leaderboard Sumbangan (IRL)</h1>
+      <p class="hint">Data diambil dari Sheet sumber. Nama yang sama akan dijumlahkan menjadi 1 entri.</p>
+
+      <!-- total -->
+      <div class="total-box" id="totalBox" aria-live="polite">
+        <div class="label">Total Semua Sumbangan</div>
+        <div class="value" id="grandTotal">—</div>
+      </div>
+
+      <div style="clear:both"></div>
+
+      <div class="controls" style="margin-top:10px;">
+        <input id="filterName" placeholder="Cari Nama..." class="search">
+        <button id="refreshBtn" class="refresh" title="Refresh">
+          <img src="icon/rotate-cw.png" class="icon-rf" alt="">
+        </button>
+      </div>
+
+      <div id="result"><div class="loading">Memuat data...</div></div>
+
+    </div>
+  </div>
+</div>
+
+
+<script>
+/* =======================================
+   LOAD SIDEBAR
+======================================= */
+fetch('sidebar.html')
+  .then(res => res.text())
+  .then(html => {
+    document.getElementById('sidebar-container').innerHTML = html;
+
+    const sidebar = document.querySelector(".sidebar");
+    const menuBtn = document.getElementById("menuBtn");
+
+    /* ==========================
+       UPDATE JUDUL HEADER
+    ========================== */
+    const pageTitle = document.getElementById("pageTitle");
+    if (pageTitle) {
+      pageTitle.textContent = document.body.dataset.title || "No Title";
+    }
+
+    /* ==========================
+       TOGGLE SIDEBAR
+    ========================== */
+    menuBtn.addEventListener("click", e => {
+      e.stopPropagation();
+      sidebar.classList.toggle("active");
+      menuBtn.classList.toggle("active");
+    });
+
+    document.addEventListener("click", e => {
+      if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+        sidebar.classList.remove("active");
+        menuBtn.classList.remove("active");
+      }
+    });
+
+    /* ==========================
+       ACTIVE MENU (BY SECTION)
+    ========================== */
+    const section = document.body.dataset.section;
+
+    document.querySelectorAll(".sidebar a").forEach(a => {
+      const href = a.getAttribute("href").toLowerCase();
+      a.classList.remove("active");
+
+      if (section === "donasi" && href.includes("donasi")) {
+        a.classList.add("active");
+      }
+      if (section === "game" && href.includes("game")) {
+        a.classList.add("active");
+      }
+    });
+
+  });
+
+
+/* =======================================
+   GOOGLE SHEET
+======================================= */
+const SHEET_URL =
+"https://docs.google.com/spreadsheets/d/1T_t_Hu8DUMvPNAVc-ExMEIHjInLf-xxrXHRdXlz71z0/gviz/tq?gid=630977817&tqx=out:json";
+
+
+function parseGviz(text){
+  const jsonText = text.replace(/^[^\{]*/, '').replace(/\);?$/, '');
+  return JSON.parse(jsonText);
+}
+function tableToObjects(table){
+  const cols = table.cols.map(c => (c.label || c.id).trim());
+  return table.rows.map(r=>{
+    const o={}; r.c.forEach((cell,i)=>{ o[cols[i]] = cell?cell.v:""; }); return o;
+  });
+}
+function detectFields(cols){
+  const lower = cols.map(c => c.toLowerCase());
+  let nameKey=null, jumlahKey=null;
+  for(let i=0;i<lower.length;i++){
+    if(!nameKey && lower[i].includes("nama")) nameKey = cols[i];
+    if(!jumlahKey && lower[i].includes("jumlah")) jumlahKey = cols[i];
+  }
+  return { nameKey, jumlahKey };
+}
+function parseNumber(v){
+  if(typeof v === "number") return v;
+  let s = String(v).replace(/\./g,"").replace(/,/g,"").replace(/[^\d-]/g,"");
+  return parseFloat(s) || 0;
+}
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+function formatRupiah(n){
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+
+/* =======================================
+   RENDER LIST
+======================================= */
+function renderCards(data){
+  const result=document.getElementById("result");
+  if(!data.length){
+    result.innerHTML = `<div class="loading">Belum ada data.</div>`;
+    return;
+  }
+
+  const filter = (document.getElementById("filterName").value || "").toLowerCase();
+  const filtered = filter ? data.filter(d => d.name.toLowerCase().includes(filter)) : data;
+
+  let html = `<div class="leaderboard-list">`;
+  filtered.forEach((d,i)=>{
+    html += `
+      <div class="donation-item">
+        <div class="rank-big">${i+1}</div>
+        <div class="info-right">
+          <div class="donor-name">${escapeHtml(d.name)}</div>
+          <div class="donor-total">Rp ${formatRupiah(d.total)}</div>
+        </div>
+      </div>`;
+  });
+  html += `</div>`;
+
+  result.innerHTML = html;
+}
+
+
+/* =======================================
+   LOAD DATA
+======================================= */
+async function loadData(){
+  const result=document.getElementById("result");
+  result.innerHTML = `<div class="loading">Memuat data...</div>`;
+
+  try{
+    const txt = await (await fetch(SHEET_URL,{cache:"no-store"})).text();
+    const json = parseGviz(txt);
+    const rows = tableToObjects(json.table);
+
+    const cols = json.table.cols.map(c => c.label || c.id || "");
+    const { nameKey, jumlahKey } = detectFields(cols);
+
+    if(!nameKey || !jumlahKey){
+      result.innerHTML = `<div class="error">Kolom nama/jumlah tidak ditemukan.</div>`;
+      return;
+    }
+
+    const map = new Map();
+    let totalSemua = 0;
+
+    rows.forEach(r=>{
+      const name = String(r[nameKey] || "").trim();
+      if(!name) return;
+
+      const jumlah = parseNumber(r[jumlahKey]);
+      totalSemua += jumlah;
+
+      const key = name.toLowerCase();
+      if(!map.has(key)) map.set(key,{ name, total:0 });
+      map.get(key).total += jumlah;
+    });
+
+    document.getElementById("grandTotal").textContent =
+      "Rp " + formatRupiah(totalSemua);
+
+    const arr = Array.from(map.values()).sort((a,b)=>b.total-a.total);
+    renderCards(arr);
+
+  } catch(err){
+    result.innerHTML = `<div class="error">Gagal memuat data.</div>`;
+    console.error(err);
+  }
+}
+
+
+/* =======================================
+   EVENT HANDLER
+======================================= */
+document.addEventListener("DOMContentLoaded", ()=>{
+  document.getElementById("refreshBtn").onclick = ()=> loadData();
+  document.getElementById("filterName").oninput = ()=> setTimeout(loadData,150);
+
+  loadData();
+  setInterval(loadData, 120000);
+});
+</script>
+
+</body>
+</html>
