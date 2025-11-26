@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Donasi</title>
+  <link rel="stylesheet" href="donasi.css">
+  <link rel="stylesheet" href="sidebar.css">
+</head>
+<body data-title="Donasi">
+
+<div id="sidebar-container"></div>
+
+<nav class="toggle-don">
+  <a href="donasi.html" class="on">Duit Server</a>
+  <a href="donasi-irl.html">Duit Real</a>
+</nav>
+<!-- MAIN -->
+<div class="content-wrap">
+  <div class="main-area">
+    <div class="container page-header">
+
+      <h1>Leaderboard Sumbangan</h1>
+      <p class="hint">Sumbangan akan digunakan untuk pembangunan, beli bahan, sewa, dan lain-lain.</p>
+
+      <div class="total-box" id="totalBox">
+        <div class="label">Total Semua Sumbangan</div>
+        <div class="value" id="grandTotal">—</div>
+      </div>
+
+      <div style="clear:both"></div>
+
+      <div class="controls" style="margin-top:10px;">
+        <label><input id="filterName" placeholder="Cari Nama..." class="search"></label>
+        <button id="refreshBtn" class="refresh"><img src="icon/rotate-cw.png" class="icon-rf"></button>
+      </div>
+
+      <div id="result">
+        <div class="loading">Memuat data...</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* ======================================================
+   LOAD SIDEBAR + MENU BTN
+====================================================== */
+fetch('sidebar.html')
+  .then(res => res.text())
+  .then(html => {
+    document.getElementById('sidebar-container').innerHTML = html;
+
+    const sidebar = document.querySelector('.sidebar');
+    const menuBtn = document.getElementById('menuBtn');
+
+    menuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sidebar.classList.toggle('active');
+      menuBtn.classList.toggle('active');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+        sidebar.classList.remove('active');
+        menuBtn.classList.remove('active');
+      }
+    });
+
+    document.querySelectorAll('.sidebar a').forEach(link => {
+      link.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        menuBtn.classList.remove('active');
+      });
+    });
+
+    const currentPage = window.location.pathname.split('/').pop();
+    document.querySelectorAll('.sidebar a').forEach(link => {
+      const target = link.getAttribute('href');
+      link.classList.remove('active');
+      if (target === currentPage) link.classList.add('active');
+    });
+
+    const pageTitle = document.getElementById("pageTitle");
+    if (pageTitle) {
+      pageTitle.textContent = document.body.getAttribute("data-title");
+    }
+  });
+
+/* GOOGLE SHEET URL */
+const SHEET_ROWS_URL =
+"https://docs.google.com/spreadsheets/d/1yYP89ep0aNEXjd8RHuf_jFsXPWpXUkSBVy_DyqtU6eM/gviz/tq?gid=91664058&tqx=out:json";
+
+const SHEET_GRANDTOTAL_URL =
+"https://docs.google.com/spreadsheets/d/1yYP89ep0aNEXjd8RHuf_jFsXPWpXUkSBVy_DyqtU6eM/gviz/tq?gid=1689798336&tqx=out:json";
+
+
+/* ======================================================
+   UTIL + FORMAT RUPIAH
+====================================================== */
+function parseGviz(text){
+  const jsonText = text.replace(/^[^\{]*/, '').replace(/\);?$/, '');
+  return JSON.parse(jsonText);
+}
+function tableToObjects(table){
+  const cols = table.cols.map(c => (c.label || c.id).trim());
+  return table.rows.map(r=>{
+    const o={}; r.c.forEach((cell,i)=>{ o[cols[i]] = cell?cell.v:""; }); return o;
+  });
+}
+function detectFields(cols){
+  const lower = cols.map(c => c.toLowerCase());
+  let nameKey = null, jumlahKey = null;
+
+  for(let i=0;i<lower.length;i++){
+    if(!nameKey && lower[i].includes("nama")) nameKey = cols[i];
+    if(!jumlahKey && lower[i].includes("jumlah")) jumlahKey = cols[i];
+  }
+  return { nameKey, jumlahKey };
+}
+function parseNumber(v){
+  if(typeof v === "number") return v;
+  let s = String(v).replace(/\./g,"").replace(/,/g,"").replace(/[^\d-]/g,"");
+  return parseFloat(s) || 0;
+}
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+/* === FORMAT RUPIAH RIBUAN === */
+function formatRupiah(n){
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+
+/* ======================================================
+   RENDER CARD LAYOUT
+====================================================== */
+function renderCards(data){
+  const result = document.getElementById("result");
+  if(!data.length){
+    result.innerHTML = `<div class="loading">Belum ada data.</div>`;
+    return;
+  }
+
+  const filter = (document.getElementById("filterName").value || "").toLowerCase();
+  const filtered = filter ? data.filter(d => d.name.toLowerCase().includes(filter)) : data;
+
+  let html = `<div class="leaderboard-list">`;
+  filtered.forEach((d,i)=>{
+    html += `
+      <div class="donation-item">
+        <div class="rank-big">${i+1}</div>
+        <div class="info-right">
+          <div class="donor-name">${escapeHtml(d.name)}</div>
+          <div class="donor-total">Rp ${formatRupiah(d.total)}</div>
+        </div>
+      </div>`;
+  });
+  html += `</div>`;
+
+  result.innerHTML = html;
+}
+
+
+/* ======================================================
+   LOAD GRAND TOTAL
+====================================================== */
+async function loadGrandTotal(){
+  try {
+    const t = await (await fetch(SHEET_GRANDTOTAL_URL, {cache:"no-store"})).text();
+    const json = parseGviz(t);
+    const rows = tableToObjects(json.table);
+    const val = parseNumber(Object.values(rows[0])[0]);
+
+    document.getElementById("grandTotal").textContent =
+      "Rp " + formatRupiah(val);
+
+  } catch {
+    document.getElementById("grandTotal").textContent = "—";
+  }
+}
+
+
+/* ======================================================
+   LOAD DATA DONATUR
+====================================================== */
+async function loadDonors(){
+  const result = document.getElementById("result");
+  result.innerHTML = `<div class="loading">Memuat data...</div>`;
+
+  try {
+    const txt = await (await fetch(SHEET_ROWS_URL, {cache:"no-store"})).text();
+    const json = parseGviz(txt);
+    const rows = tableToObjects(json.table);
+    const cols = json.table.cols.map(c => c.label || c.id || "");
+
+    const { nameKey, jumlahKey } = detectFields(cols);
+    if(!nameKey || !jumlahKey){
+      result.innerHTML = `<div class="error">Gagal deteksi kolom.</div>`;
+      return;
+    }
+
+    const map = new Map();
+    rows.forEach(r=>{
+      const name = String(r[nameKey] || "").trim();
+      if(!name) return;
+      const num = parseNumber(r[jumlahKey]);
+      const key = name.toLowerCase();
+
+      if(!map.has(key)) map.set(key,{name,total:0});
+      map.get(key).total += num;
+    });
+
+    const arr = Array.from(map.values()).sort((a,b)=>b.total-a.total);
+    renderCards(arr);
+
+  } catch(err){
+    result.innerHTML = `<div class="error">Gagal memuat data.</div>`;
+  }
+}
+
+
+/* ======================================================
+   BIND EVENTS
+====================================================== */
+document.addEventListener("DOMContentLoaded", ()=>{
+  document.getElementById("refreshBtn").onclick = ()=>{ loadDonors(); loadGrandTotal(); };
+  document.getElementById("filterName").oninput = ()=> setTimeout(loadDonors, 150);
+
+  loadGrandTotal();
+  loadDonors();
+
+  setInterval(()=>{ loadGrandTotal(); loadDonors(); }, 120000);
+});
+</script>
+
+</body>
+</html>
