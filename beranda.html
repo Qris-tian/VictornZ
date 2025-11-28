@@ -15,6 +15,9 @@
 <!-- KONTEN -->
 <div class="content">
   <h1>Selamat Datang!</h1>
+  <div class="bottom-section">
+    <a href="https://forms.gle/hhC9Y7bnVCMUWEcZ7" class="btn-bottom">Form Pendaftaran</a></a>
+  </div>
   <p class="deskripsi">
     Halo teman teman kalian sudah tau apa itu Victornz? yupp Victornz sendiri adalah team Minecraft dari server pn yaa teman teman, kalian sudah pasti tau dong, Team ini sendiri di bentuk pada Tanggal <br>
     <b>26 agustus 2025</b>, Victornz ini awalnya di dirikan oleh 4 orang yaitu dengan
@@ -64,10 +67,40 @@
     dengan nama awal team adalah <b>BRUTAL</b>, Dan ya team ini terbentuk untuk mencari teman dalam server <i>ProwNetwork</i> dengan adanya team Victornz kalian bisa build bareng bikin farm bareng dan bersenang senang, semoga kalian betah yaa teman teman
   </p>
 </div>
+<div class="container">
 
-<div class="bottom-section">
-  <p class="bottom-text">Bagi Member Baru :</p>
-  <a href="https://forms.gle/hhC9Y7bnVCMUWEcZ7" class="btn-bottom">Silahkan Isi Link Form Ini</a>
+  <!-- TikTok -->
+  <div class="btn tiktok" onclick="goTikTok()">
+    <img src="media/tt.png">
+    <span>TikTok</span>
+  </div>
+
+  <!-- WhatsApp -->
+  <div class="btn wa" onclick="openPopup('wa')">
+    <img class="wa-img" src="media/wa.png">
+    <span>WhatsApp</span>
+  </div>
+
+  <!-- Discord -->
+  <div class="btn discord" onclick="openPopup('dc')">
+    <img src="media/dc.png">
+    <span>Discord</span>
+  </div>
+
+</div>
+
+<!-- POPUP PASSWORD -->
+<div class="popup-bg" id="popup">
+  <div class="popup-box" id="popupBox">
+    <h3 id="popupTitle">Masukkan Password</h3>
+
+    <div class="input-container">
+      <input type="password" id="pwInput" placeholder=" " autocomplete="off">
+      <label id="pwLabel">Password...</label>
+    </div>
+
+    <button onclick="submitPW()">Masuk</button>
+  </div>
 </div>
 
 <script>
@@ -141,6 +174,68 @@ document.addEventListener('click', () => {
   players.forEach(p => p.classList.remove('active'));
 });
 </script>
+<script>
+// PASSWORD
+const PASSWORD_WA = "4MB0N";
+const PASSWORD_DC = "4MB0N";
 
+// LINK TUJUAN
+const linkTiktok = "https://www.tiktok.com/";
+const linkWA = "https://chat.whatsapp.com/DhSJNnaNSXVGOXpYijvfjR?mode=wwt";
+const linkDiscord = "https://discord.gg/kNcNkh2ve3";
+
+let currentTarget = "";
+
+// === BUKA POPUP ===
+function goTikTok() {
+  window.location.href = linkTiktok;
+}
+
+function openPopup(target) {
+  currentTarget = target;
+  const popup = document.getElementById("popup");
+  const label = document.getElementById("pwLabel");
+
+  popup.style.display = "flex";
+
+  if (target === "wa") {
+    document.getElementById("popupTitle").innerText =
+      "Password WhatsApp (ada di chanel Deskripsi grup Discord)";
+    label.innerText = "Password WhatsApp";
+  }
+
+  if (target === "dc") {
+    document.getElementById("popupTitle").innerText =
+      "Password Discord (ada di deskripsi Grup WhatsApp)";
+    label.innerText = "Password Discord";
+  }
+
+  document.getElementById("pwInput").value = "";
+}
+
+// === SUBMIT PASSWORD ===
+function submitPW() {
+  let pw = document.getElementById("pwInput").value;
+
+  if (currentTarget === "wa") {
+    if (pw === PASSWORD_WA) window.location.href = linkWA;
+    else alert("Password WhatsApp salah!");
+  }
+
+  if (currentTarget === "dc") {
+    if (pw === PASSWORD_DC) window.location.href = linkDiscord;
+    else alert("Password Discord salah!");
+  }
+
+  document.getElementById("popup").style.display = "none";
+}
+
+// === TUTUP POPUP KETIKA KLIK DI LUAR BOX ===
+document.getElementById("popup").addEventListener("click", function(e){
+  if (e.target === this) {
+    this.style.display = "none";
+  }
+});
+</script>
 </body>
 </html>
